@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Address;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,11 +15,11 @@ return new class extends Migration
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('cpfcnpj')->unique();
-            $table->integer('endereco_id')->nullable();
             $table->string('email');
-            $table->string('telefone');
-            $table->date('datanascimento')->nullable();
+            $table->string('phone');
+            $table->integer('address_id')->nullable();
+            $table->string('address_number');
+            $table->string('adress_complement')->nullable();
             $table->timestamps();
         });
     }

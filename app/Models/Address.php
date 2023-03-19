@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class Address extends Model
 {
     use HasFactory;
-
-    public function sellings(){
-        return $this->hasMany(Sale::class);
-    }
+    protected $table = 'addresses';
+    protected $fillable = ['cep', 'address', 'city', 'state', 'cod_ibge'];
 }

@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('enderecos', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('cep')->unique();
-            $table->string('logradouro');
-            $table->string('cidade');
-            $table->string('uf');
-            $table->integer('cod_ibge')->unique()->nullable();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->integer('category_id');
+            $table->string('manufacturer')->nullable();
+            $table->integer('quantity_type_id');
+            $table->float('sell_price');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('address');
+        Schema::dropIfExists('products');
     }
 };
