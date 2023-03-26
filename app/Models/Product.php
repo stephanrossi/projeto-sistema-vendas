@@ -13,4 +13,14 @@ class Product extends Model
     {
         return $this->belongsTo(ProductsCategory::class);
     }
+
+    public function stocks()
+    {
+        return $this->belongsTo(ProductStock::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
 }
