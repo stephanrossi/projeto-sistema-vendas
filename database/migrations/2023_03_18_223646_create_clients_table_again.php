@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->integer('address_id')->nullable();
-            $table->string('address_number');
-            $table->string('adress_complement')->nullable();
+            $table->string('address_number')->nullable();
+            $table->string('address_complement')->nullable();
             $table->timestamps();
         });
     }

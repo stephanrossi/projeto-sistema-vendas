@@ -41,7 +41,7 @@ class Address extends Model
             if (count($getAddress) <= 0) {
                 self::insertNewAddress($cep);
             } else {
-                return $getAddress;
+                return $getAddress[0];
             }
         } catch (Exception $e) {
             exit($e->getMessage());
