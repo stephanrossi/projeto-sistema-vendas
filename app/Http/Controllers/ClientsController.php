@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Address;
 use App\Models\Client;
 use Exception;
 use Illuminate\Http\Request;
