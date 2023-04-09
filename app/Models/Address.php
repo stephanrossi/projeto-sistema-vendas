@@ -15,6 +15,11 @@ class Address extends Model
     protected $table = 'addresses';
     protected $fillable = ['cep', 'address', 'city', 'state', 'cod_ibge'];
 
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
     public function clients()
     {
         return $this->hasMany(Client::class);

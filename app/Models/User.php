@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens, Notifiable;
     protected $table = 'users';
-    protected $fillable = ['name', 'email', 'password', 'permissions', 'username', 'api_token'];
+    protected $fillable = ['name', 'email', 'password', 'permissions', 'username','api_token'];
     protected $hidden = ['password'];
 
     public function sellings()
