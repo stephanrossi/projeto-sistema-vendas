@@ -78,7 +78,7 @@ class ClientsController extends Controller
                 return response()->json([
                     'error' => true,
                     'msg' => 'CPF ou CNPJ inválidos'
-                ]);
+                ], 400);
             }
         }
 
@@ -87,7 +87,7 @@ class ClientsController extends Controller
                 return response()->json([
                     'error' => true,
                     'msg' => 'CPF ou CNPJ inválidos'
-                ]);
+                ], 400);
             }
         }
 
@@ -105,7 +105,7 @@ class ClientsController extends Controller
         return response()->json([
             'error' => false,
             'data' => $client
-        ]);
+        ], 201);
     }
 
     /**

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function loginUser(Request $r)
+    public function login(Request $r)
     {
         try {
             $validateUser = Validator::make(
@@ -24,8 +24,7 @@ class AuthController extends Controller
             if ($validateUser->fails()) {
                 return response()->json([
                     'error' => true,
-                    'message' => 'Validation error',
-                    'errors' => $validateUser->errors()
+                    'msg' => $validateUser->errors()
                 ], 401);
             }
 
@@ -53,6 +52,8 @@ class AuthController extends Controller
 
     public function logout(Request $r)
     {
-       return Auth::logout();
+        $user = User::where('email', $r->email)->first();
+
+        $user->tokens()->delete();
     }
 }

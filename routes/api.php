@@ -17,21 +17,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'loginUser']);
-    Route::post('/logout', [AuthController::class, 'logout']);
-});
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth:sanctum', 'verified')
     ->prefix('addresses')
     ->group(function () {
-        Route::get('/', [AddressesController::class, 'getAddress']);
+        Route::get('/', [AddressesController::class, 'index']);
+        Route::get('/{cep}', [AddressesController::class, 'show']);
+        Route::post('/', [AddressesController::class, 'store']);
     });
 
 Route::middleware('auth:sanctum', 'verified')
     ->prefix('client')
     ->group(function () {
-        Route::get('/', [ClientsController::class, 'listClients']);
+        Route::get('/', [ClientsController::class, 'index']);
         Route::post('/', [ClientsController::class, 'store']);
         Route::get('/find', [ClientsController::class, 'findClient']);
         Route::get('/{id}', [ClientsController::class, 'getClient']);
