@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum', 'verified')
     ->prefix('addresses')
     ->group(function () {
         Route::get('/', [AddressesController::class, 'index']);
-        Route::get('/{cep}', [AddressesController::class, 'show']);
+        Route::get('/find', [AddressesController::class, 'show']);
         Route::post('/', [AddressesController::class, 'store']);
     });
 

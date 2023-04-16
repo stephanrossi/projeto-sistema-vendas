@@ -85,7 +85,7 @@ class AddressesController extends Controller
     public function show(Request $r)
     {
         try {
-            $cepFormatted = preg_replace('/[^0-9]/', '', $r->query('cep'));
+            $cepFormatted = preg_replace('/[^0-9]/', '', $r->cep);
 
             if (strlen($cepFormatted) !== 8) {
                 return response()->json([
@@ -94,7 +94,8 @@ class AddressesController extends Controller
                 ]);
                 exit();
             }
-            $address = Address::firstWhere('cep', $cepFormatted);
+
+            $address = Address::where('cep', $cepFormatted)->first();
 
             if (empty($address)) {
                 return response()->json([
