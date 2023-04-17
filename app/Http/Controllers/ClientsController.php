@@ -70,15 +70,15 @@ class ClientsController extends Controller
             return response()->json([
                 'error' => true,
                 'msg' => 'CPF ou CNPJ inválidos'
-            ], 400);
+            ]);
         }
 
         if (strlen($cpf_cnpj) == 11) {
             if (!CpfCnpjValidator::validateCPF($cpf_cnpj)) {
                 return response()->json([
                     'error' => true,
-                    'msg' => 'CPF ou CNPJ inválidos'
-                ], 400);
+                    'msg' => 'CPF inválido.'
+                ]);
             }
         }
 
@@ -86,8 +86,8 @@ class ClientsController extends Controller
             if (!CpfCnpjValidator::validateCNPJ($cpf_cnpj)) {
                 return response()->json([
                     'error' => true,
-                    'msg' => 'CPF ou CNPJ inválidos'
-                ], 400);
+                    'msg' => 'CNPJ inválido.'
+                ]);
             }
         }
 
@@ -111,17 +111,93 @@ class ClientsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $r)
     {
-        //
+        try {
+            $email = $r->email;
+            $cpf_cnpj = $r->cpf_cnpj;
+            $name = $r->name;
+            $phone = $r->phone;
+
+            $validator = Validator::make($r->all(), [
+                "name"              => "string|max:255|nullable",
+                "email"             => "email|nullable",
+                "phone"             => "string|nullable",
+                "cpf_cnpj"          => "string|nullable",
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => $validator->errors()->messages()
+                ], 400);
+            }
+
+            if (!empty($cpf_cnpj)) {
+                $cpf_cnpj = preg_replace('/[^0-9]/', '', $cpf_cnpj);
+
+                if (strlen($cpf_cnpj) == 11) {
+                    if (!CpfCnpjValidator::validateCPF($cpf_cnpj)) {
+                        return response()->json([
+                            'error' => true,
+                            'msg' => 'CPF inválido.'
+                        ]);
+                    }
+                } elseif (strlen($cpf_cnpj) == 14) {
+                    if (!CpfCnpjValidator::validateCNPJ($cpf_cnpj)) {
+                        return response()->json([
+                            'error' => true,
+                            'msg' => 'CNPJ inválido.'
+                        ]);
+                    }
+                } else {
+                    return response()->json([
+                        'error' => true,
+                        'msg' => 'CPF ou CNPJ inválidos.'
+                    ]);
+                }
+            }
+
+            $client = Client::where('cpf_cnpj', $cpf_cnpj)
+                ->orWhere('email', $email)
+                ->orWhere('name', 'LIKE', "%{$name}%")
+                ->orWhere('phone', 'LIKE', "%{$phone}%")
+                ->get();
+
+            if (!$client) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => 'Cliente não encontrado.'
+                ]);
+            } else {
+                return $client;
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Request $r)
     {
-        //
+        try {
+            $id = $r->id;
+
+            $client = Client::find($id);
+
+            if (!$client) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => 'Cliente não encontrado.'
+                ]);
+            } else {
+                return $client;
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**

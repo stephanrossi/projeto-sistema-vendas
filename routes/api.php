@@ -33,9 +33,8 @@ Route::middleware('auth:sanctum', 'verified')
     ->group(function () {
         Route::get('/', [ClientsController::class, 'index']);
         Route::post('/', [ClientsController::class, 'store']);
-        Route::get('/find', [ClientsController::class, 'findClient']);
-        Route::get('/{id}', [ClientsController::class, 'getClient']);
-        Route::put('/{id}', [ClientsController::class, 'editClient']);
+        Route::get('/find', [ClientsController::class, 'show']);
+        Route::put('/{id}', [ClientsController::class, 'edit']);
     });
 
 Route::middleware('auth:sanctum', 'verified')
