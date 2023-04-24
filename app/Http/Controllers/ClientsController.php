@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Helpers\CpfCnpjValidator as CpfCnpjValidator;
 use App\Models\Client;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -114,66 +116,31 @@ class ClientsController extends Controller
     public function show(Request $r)
     {
         try {
-            $email = $r->email;
-            $cpf_cnpj = $r->cpf_cnpj;
-            $name = $r->name;
-            $phone = $r->phone;
-
-            $validator = Validator::make($r->all(), [
-                "name"              => "string|max:255|nullable",
-                "email"             => "email|nullable",
-                "phone"             => "string|nullable",
-                "cpf_cnpj"          => "string|nullable",
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'error' => true,
-                    'msg' => $validator->errors()->messages()
-                ], 400);
-            }
-
-            if (!empty($cpf_cnpj)) {
-                $cpf_cnpj = preg_replace('/[^0-9]/', '', $cpf_cnpj);
-
-                if (strlen($cpf_cnpj) == 11) {
-                    if (!CpfCnpjValidator::validateCPF($cpf_cnpj)) {
-                        return response()->json([
-                            'error' => true,
-                            'msg' => 'CPF inválido.'
-                        ]);
+            $client = Client::query()
+                ->when(
+                    $r->search,
+                    function (Builder $b) use ($r) {
+                        $b->where('cpf_cnpj', $r->search)
+                            ->orWhere('email', $r->search)
+                            ->orWhere('name', 'LIKE', "%{$r->search}%")
+                            ->orWhere('phone', 'LIKE', "%{$r->search}%");
                     }
-                } elseif (strlen($cpf_cnpj) == 14) {
-                    if (!CpfCnpjValidator::validateCNPJ($cpf_cnpj)) {
-                        return response()->json([
-                            'error' => true,
-                            'msg' => 'CNPJ inválido.'
-                        ]);
-                    }
-                } else {
-                    return response()->json([
-                        'error' => true,
-                        'msg' => 'CPF ou CNPJ inválidos.'
-                    ]);
-                }
-            }
-
-            $client = Client::where('cpf_cnpj', $cpf_cnpj)
-                ->orWhere('email', $email)
-                ->orWhere('name', 'LIKE', "%{$name}%")
-                ->orWhere('phone', 'LIKE', "%{$phone}%")
+                )
                 ->get();
 
-            if (!$client) {
+            if (count($client) == 0) {
                 return response()->json([
                     'error' => true,
                     'msg' => 'Cliente não encontrado.'
                 ]);
-            } else {
-                return $client;
             }
+
+            return response()->json([
+                'error' => false,
+                'data' => $client
+            ], 200);
         } catch (\Throwable $th) {
-            throw $th;
+            throw $th->getMessage();
         }
     }
 
@@ -196,16 +163,47 @@ class ClientsController extends Controller
                 return $client;
             }
         } catch (\Throwable $th) {
-            throw $th;
+            throw $th->getMessage();
         }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $r, string $id)
     {
-        //
+        try {
+            $clientExists = Client::find($id);
+
+            if (!$clientExists) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => 'Cliente não encontrado.'
+                ]);
+            }
+
+            $client = Client::where('id', $id)
+                ->update([
+                    'name' => $r->name,
+                    'cpf_cnpj' => $r->cpf_cnpj,
+                    'email' => $r->email,
+                    'phone' => $r->phone,
+                    'address_id' => $r->address_id,
+                    'address_number' => $r->address_number,
+                    'dt_birth' => $r->dt_birth
+                ]);
+
+            if ($client !== 1) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => "Ocorreu um erro, confira os dados e tente novamente."
+                ]);
+            }
+
+            return $client;
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
     }
 
     /**
@@ -213,6 +211,26 @@ class ClientsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $client = Client::destroy($id);
+
+            if (!$client) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => 'Cliente não encontrado.'
+                ]);
+            }
+
+            if ($client !== 1) {
+                return response()->json([
+                    'error' => true,
+                    'msg' => 'Ocorreu um erro, confira os dados e tente novamente.'
+                ]);
+            }
+
+            return $client;
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
     }
 }
