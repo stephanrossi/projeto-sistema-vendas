@@ -16,9 +16,11 @@ class ProductsController extends Controller
     {
         try {
             $products = Product::all();
-            echo "aqui";
 
-            return $products;
+            return response([
+                'error' => false,
+                'data' => $products
+            ]);
         } catch (Exception $e) {
             exit($e->getMessage());
         }
@@ -42,7 +44,10 @@ class ProductsController extends Controller
 
             $product = Product::create($data);
 
-            return $product;
+            return response([
+                'error' => false,
+                'data' => $product
+            ]);
         } catch (Exception $e) {
             exit($e->getMessage());
         }
@@ -53,7 +58,20 @@ class ProductsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $product = Product::find($id);
+
+            if (!$product) {
+                return response([
+                    'error' => true,
+                    'msg' => 'Produto não encontrado.'
+                ]);
+            }
+
+            return $product;
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
     }
 
     /**
@@ -67,9 +85,33 @@ class ProductsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $r, string $id)
     {
-        //
+        try {
+            $product = Product::find($id);
+
+            if (!$product) {
+                return response([
+                    'error' => true,
+                    'msg' => 'Produto não encontrado.'
+                ]);
+            }
+
+            $product->name = $r->name;
+            $product->description = $r->description;
+            $product->category_id = $r->category_id;
+            $product->quantity_type_id;
+            $product->sell_price = $r->sell_price;
+            $product->manufacturer_id = $r->manufacturer_id;
+            $product->save();
+
+            return response([
+                'error' => false,
+                'data' => $product
+            ]);
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
     }
 
     /**

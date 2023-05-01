@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\ManufacturersController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -44,6 +45,18 @@ Route::middleware('auth:sanctum', 'verified')
     ->group(function () {
         Route::get('/', [ProductsController::class, 'index']);
         Route::post('/', [ProductsController::class, 'store']);
+        Route::put('/{id}', [ProductsController::class, 'update']);
+        Route::get('/{id}', [ProductsController::class, 'show']);
+    });
+
+Route::middleware('auth:sanctum', 'verified')
+    ->prefix('manufacturer')
+    ->group(function () {
+        Route::get('/', [ManufacturersController::class, 'index']);
+        Route::post('/', [ManufacturersController::class, 'store']);
+        Route::put('/{id}', [ManufacturersController::class, 'update']);
+        Route::get('/{id}', [ManufacturersController::class, 'show']);
+        Route::delete('/{id}', [ManufacturersController::class, 'destroy']);
     });
 
 Route::middleware('auth:sanctum', 'verified')
